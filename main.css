@@ -1,0 +1,8 @@
+*{outline: none;}
+body{width:500px;margin:auto;}
+header{font-size: 2em;}
+#content{}
+#content form{width: 300px;}
+#content p label{width: 120px;display: block;float: left;}
+#content p input{}
+#content p #submit{float:right;}
