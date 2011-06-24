@@ -1,14 +1,16 @@
 <?php
 if( $_GET ){
-    // TODO: remoeve limit and replace it with cols and rows size
-
     // we set url params
     $apiUrl = "http://ws.audioscrobbler.com/2.0/";
     $apiKey = "61d580c50e6e5e3f14b6bd9527e5395f";
     $method = "user.gettopalbums";
-    ( $_GET["user"] ) ? $user = $_GET["user"] : $user = "dinduks";
-    ( $_GET["period"] ) ? $period = $_GET["period"] : $period = "overall";
-    ( $_GET["limit"] ) ? $limit = $_GET["limit"] : $limit = "20";
+    
+    $user = $_GET["user"];
+    $period = $_GET["period"];
+    $rows = $_GET["rows"];
+    $cols = $_GET["cols"];
+    
+    $limit = $cols * $rows;
 
     // we create url
     $query = $apiUrl."?method=".$method."&user=".$user."&period=".$period.
@@ -40,12 +42,11 @@ if( $_GET ){
     unset($imageUrl);
 
     // srsbsns: create our album patchwork \o/
-    $PatchworkRows = 5;
-    $PatchworkCols = 3;
-    $PatchworkWidth = 299; // 299 is the max size of the Last.fm profile left column ;)
-    $imagesSideSize = ($PatchworkWidth - ($PatchworkCols-1)) / $PatchworkCols; // we take out 1px for the border between the images
-    $PatchworkHeight = $imagesSideSize * $PatchworkRows + ( $PatchworkRows - 1 );
-
+//    $imagesSideSize = ($PatchworkWidth - ($cols-1)) / $cols; // we take out 1px for the border between the images
+    (isset($_GET["imageSize"])) ? $imagesSideSize = $_GET["imageSize"] : $imagesSideSize = 99;
+    $PatchworkWidth = $imagesSideSize * $cols + ($cols - 1); // 299 is the max size of the Last.fm profile left column ;)
+    $PatchworkHeight = $imagesSideSize * $rows + ($rows - 1);
+    
     // we create our "empty" patchwork
     $patchwork = imagecreatetruecolor($PatchworkWidth, $PatchworkHeight);
     // we create white color (reminds me of SDL ^^)
@@ -54,26 +55,28 @@ if( $_GET ){
     imagefilltoborder($patchwork, 0, 0, $white, $white);
 
     // now we "parse" our images in the patchwork, while resizing them :]
-    for( $i=0; $i<$PatchworkRows; $i++ )
-        for( $j=0; $j<$PatchworkCols; $j++ )
-            imagecopyresized($patchwork, $images[$PatchworkCols*$i+$j], $j*$imagesSideSize+$j, $i*$imagesSideSize+$i, 0, 0, $imagesSideSize, $imagesSideSize, imagesx($images[$PatchworkCols*$i+$j]), imagesy($images[$PatchworkCols*$i+$j]));
+    for( $i=0; $i<$rows; $i++ )
+        for( $j=0; $j<$cols; $j++ )
+            imagecopyresampled($patchwork, $images[$cols*$i+$j], $j*$imagesSideSize+$j, $i*$imagesSideSize+$i, 0, 0, $imagesSideSize, $imagesSideSize, imagesx($images[$cols*$i+$j]), imagesy($images[$cols*$i+$j]));
 
     header("Content-type: image/jpg");
     imagejpeg($patchwork);
 }
 ?>
+
 <!DOCTYPE html>
 <html>
     <head>
         <title>Last.fm top albums patchwork</title>
+        <link href="main.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
-        <header></header>
+        <header>Last.fm album patchwork generator</header>
         <div id="content">
             <form action="index.php" method="get">
                 <p>
-                    <label for="user">Last.fm username</label>
-                    <input type="text" name="user" id="user" />
+                    <label for="user">Username</label>
+                    <input type="text" name="user" id="user" value="Dinduks" />
                 </p>
                 <p>
                     <label for="period">Period</label>
@@ -86,22 +89,27 @@ if( $_GET ){
                     </select>
                 </p>
                 <p>
-                    <label>Limit</label>
-                    <select name="limit" id="limit">
-                        <option value="3">3</option>
-                        <option value="6">6</option>
-                        <option value="9">9</option>
-                        <option value="12">12</option>
-                        <option value="15">15</option>
-                        <option value="18">18</option>
-                        <option value="21">21</option>
-                        <option value="24">24</option>
-                        <option value="27">27</option>
-                        <option value="30">30</option>
+                    <label for="rows">Rows</label>
+                    <select name="rows" id="rows">
+                        <?php for( $i=1; $i<=20; $i++ ){ ?>
+                        <option value="<?php echo $i; ?>" <?php echo ($i==5) ? "selected=\"selected\"" : ""; ?>><?php echo $i; ?></option>
+                        <?php } ?>
                     </select>
                 </p>
                 <p>
-                    <input type="submit" value="Generate!" />
+                    <label for="cols">Columns</label>
+                    <select name="cols" id="cols">
+                        <?php for( $i=1; $i<=20; $i++ ){ ?>
+                        <option value="<?php echo $i; ?>" <?php echo ($i==3) ? "selected=\"selected\"" : ""; ?>><?php echo $i; ?></option>
+                        <?php } ?>
+                    </select>
+                </p>
+                <p>
+                    <label for="imageSize">Image size</label>
+                    <input type="text" value="99" name="imageSize" id="imageSize" />
+                </p>
+                <p>
+                    <input type="submit" id="submit" value="Generate!" />
                 </p>
             </form>
         </div>
