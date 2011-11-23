@@ -1,3 +1,2 @@
-This is a generator of Last.fm top albums "patchwork", or cloud. 
-Give it your Last.fm username and it will make it for you. 
-Don't forget enabling GD library. 
+This script generates a banner with the logos of your top albums, based on your Last.fm statistics. 
+Don't forget to enable the GD library. 
