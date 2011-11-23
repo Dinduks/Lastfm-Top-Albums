@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8" />
         <title>Last.fm top albums patchwork generator</title>
         <link href="main.css" rel="stylesheet" type="text/css" />
     </head>
