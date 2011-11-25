@@ -1,27 +1,29 @@
 <?php
 
-if( $_POST ){
-    
+if(!isset($_GET)){
+    header('Location: index.php');
+    exit;
+} else {
     $apiUrl = "http://ws.audioscrobbler.com/2.0/";
     $apiKey = "61d580c50e6e5e3f14b6bd9527e5395f";
     $method = "user.gettopalbums";
 
-    $user = $_POST["user"];
-    $period = $_POST["period"];
-    $rows = $_POST["rows"];
-    $cols = $_POST["cols"];
+    $user = $_GET["user"];
+    $period = $_GET["period"];
+    $rows = $_GET["rows"];
+    $cols = $_GET["cols"];
 
     $limit = $cols * $rows;
 
-    // create url
-    $query = $apiUrl."?method=".$method."&user=".$user."&period=".$period.
-             "&limit=".$limit."&api_key=".$apiKey;
+    // create the url
+    $query = $apiUrl . "?method=" . $method . "&user=" . $user . "&period=" . $period .
+             "&limit=" . $limit . "&api_key=" . $apiKey;
 
-    // create a DOMDocument which will contain the xml document returned by Last.fm API
+    // create a DOMDocument which will contain the xml document returned Last.fm's Web service
     $topAlbums = new DOMDocument();
     $topAlbums->load($query);
 
-    // get the images urls
+    // get the images' urls
     $imagesUrlsList = array();
     $topAlbumsList = $topAlbums->getElementsByTagName("album");
     foreach( $topAlbumsList as $album ){
@@ -29,7 +31,7 @@ if( $_POST ){
     }
     unset($album);
 
-    // create the images from the urls
+    // create the images
     $images = array();
     foreach( $imagesUrlsList as $imageUrl ){
         $explodedImageUrl = explode(".", $imageUrl);
@@ -42,24 +44,25 @@ if( $_POST ){
     }
     unset($imageUrl);
 
-    // srsbsns: create our album patchwork \o/
-    (isset($_POST["imageSize"])) ? $imagesSideSize = $_POST["imageSize"] : $imagesSideSize = 99;
+    // srsbsns: create our albums patchwork \o/
+    (isset($_GET["imageSize"])) ? $imagesSideSize = $_GET["imageSize"] : $imagesSideSize = 99;
     $PatchworkWidth = $imagesSideSize * $cols + ($cols - 1); // 299 is the max size of the Last.fm profile left column ;)
     $PatchworkHeight = $imagesSideSize * $rows + ($rows - 1);
 
-    // create our "empty" patchwork
+    // create the "empty" patchwork
     $patchwork = imagecreatetruecolor($PatchworkWidth, $PatchworkHeight);
-    // we create white color (reminds me of SDL ^^)
+    // create a white color (reminds me of SDL ^^)
     $white = imagecolorallocate($patchwork, 255, 255, 255);
-    // we fill our patchwork by white color
+    // we fill our patchwork by the white color
     imagefilltoborder($patchwork, 0, 0, $white, $white);
 
     // now we "parse" our images in the patchwork, while resizing them :]
-    for( $i=0; $i<$rows; $i++ )
-        for( $j=0; $j<$cols; $j++ )
+    for( $i=0; $i<$rows; $i++ ) {
+        for( $j=0; $j<$cols; $j++ ) {
             imagecopyresampled($patchwork, $images[$cols*$i+$j], $j*$imagesSideSize+$j, $i*$imagesSideSize+$i, 0, 0, $imagesSideSize, $imagesSideSize, imagesx($images[$cols*$i+$j]), imagesy($images[$cols*$i+$j]));
+        }
+    }
 
     header("Content-type: image/jpg");
     imagejpeg($patchwork);
 }
-?>

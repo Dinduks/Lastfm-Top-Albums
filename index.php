@@ -8,7 +8,7 @@
     <body>
         <header>Last.fm top albums patchwork generator</header>
         <div id="content">
-            <form action="patchwork.php" method="post">
+            <form action="patchwork.php" method="GET">
                 <p>
                     <label for="user">Username</label>
                     <input type="text" name="user" id="user" value="Dinduks" />
