@@ -40,8 +40,8 @@
                     </select>
                 </p>
                 <p>
-                    <label for="imageSize">Image size</label>
-                    <input type="text" value="99" name="imageSize" id="imageSize" /> px
+                    <label for="imageSize">Images size</label>
+                    <input type="text" value="99" name="imageSize" id="imagesSize" /> px
                 </p>
                 <p>
                     <input type="submit" id="submit" value="Generate!" />
