@@ -14,14 +14,15 @@ $period     = $_GET["period"];
 $rows       = $_GET["rows"];
 $cols       = $_GET["cols"];
 $imagesSize = $_GET["imageSize"];
-$limit      = $cols * $rows;
+// Get 5 more albums incase there isn't an available
+// image for one of the requested albums #lazyhackftw
+$limit      = ($cols * $rows) + 5;
 
 // create the url
-$query = $apiUrl . "?method=" . $method . "&user=" . $user . "&period=" . $period .
-         "&limit=" . $limit . "&api_key=" . $apiKey;
+$query = "$apiUrl?method=$method&user=$user&period=$period&limit=$limit&api_key=$apiKey";
 
 // check if the image isn't already loaded
-$response = file_get_contents($query);
+$response     = file_get_contents($query);
 $responseHash = md5($response);
 
 
@@ -39,10 +40,10 @@ $topAlbums->load($query);
 // get the images' urls
 $imagesUrlsList = array();
 $topAlbumsList = $topAlbums->getElementsByTagName("album");
-foreach( $topAlbumsList as $album ){
-    $imagesUrlsList[] = $album->getElementsByTagName("image")->item(3)->nodeValue;
+for ($i=0; $i<$limit; $i++) {
+    if (!preg_match('/default_album/', $topAlbumsList->item($i)->getElementsByTagName("image")->item(3)->nodeValue))
+        $imagesUrlsList[] = $topAlbumsList->item($i)->getElementsByTagName("image")->item(3)->nodeValue;
 }
-unset($album);
 
 // create the images
 $images = array();
