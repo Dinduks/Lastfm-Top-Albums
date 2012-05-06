@@ -8,6 +8,7 @@
     <body>
         <header>Last.fm top albums patchwork generator</header>
         <div id="content">
+          <a href="https://github.com/Dinduks/Lastfm-Top-Albums" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
             <form action="patchwork.php" method="GET">
                 <p>
                     <label for="user">Username</label>
