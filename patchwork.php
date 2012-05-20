@@ -1,6 +1,6 @@
 <?php
 
-if(!isset($_GET)){
+if(!isset($_GET) || empty($_GET)){
     header('Location: index.php');
     exit;
 }
@@ -55,6 +55,8 @@ foreach( $imagesUrlsList as $imageUrl ){
         $images[] = imagecreatefromjpeg($imageUrl);
     if( $imageExtension == "png" )
         $images[] = imagecreatefrompng($imageUrl);
+    if($imageExtension == "gif")
+        $images[] = imagecreatefromgif($imageUrl);
 }
 unset($imageUrl);
 
