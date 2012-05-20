@@ -1,6 +1,6 @@
 <?php
 
-if(!isset($_GET) || empty($_GET)){
+if (!isset($_GET) || empty($_GET)) {
     header('Location: index.php');
     exit;
 }
@@ -33,7 +33,7 @@ if (file_exists($fileName)) {
     exit;
 }
 
-// create a DOMDocument which will contain the xml document returned by Last.fm's Web service
+// create a DOMDocument which will contain the information returned by Last.fm's Web service
 $topAlbums = new DOMDocument();
 $topAlbums->load($query);
 
@@ -47,16 +47,21 @@ for ($i=0; $i<$limit; $i++) {
 
 // create the images
 $images = array();
-foreach( $imagesUrlsList as $imageUrl ){
+foreach($imagesUrlsList as $imageUrl){
     $explodedImageUrl = explode(".", $imageUrl);
     $explodedImageUrlSize = sizeof($explodedImageUrl);
     $imageExtension = $explodedImageUrl[$explodedImageUrlSize-1];
-    if( $imageExtension == "jpg" )
+    switch ($imageExtension) {
+      case 'jpg':
         $images[] = imagecreatefromjpeg($imageUrl);
-    if( $imageExtension == "png" )
+        break;
+      case 'png':
         $images[] = imagecreatefrompng($imageUrl);
-    if($imageExtension == "gif")
+        break;
+      case 'gif':
         $images[] = imagecreatefromgif($imageUrl);
+        break;
+    }
 }
 unset($imageUrl);
 
@@ -73,8 +78,8 @@ $white = imagecolorallocate($patchwork, 255, 255, 255);
 imagefilltoborder($patchwork, 0, 0, $white, $white);
 
 // now we "parse" our images in the patchwork, while resizing them :]
-for( $i=0; $i<$rows; $i++ ) {
-    for( $j=0; $j<$cols; $j++ ) {
+for ($i=0; $i<$rows; $i++) {
+    for ($j=0; $j<$cols; $j++) {
         imagecopyresampled($patchwork, $images[$cols*$i+$j], $j*$imagesSideSize+$j, $i*$imagesSideSize+$i, 0, 0, $imagesSideSize, $imagesSideSize, imagesx($images[$cols*$i+$j]), imagesy($images[$cols*$i+$j]));
     }
 }
