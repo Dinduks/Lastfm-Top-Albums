@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8" />
         <title>Last.fm top albums patchwork generator</title>
+        <meta charset="utf-8" />
+        <meta name="description" content="A tool that generates a patchwork, an image, based on the covers of your Last.fm top albums. It's simple, free, and it works." />
+        <meta name="keywords" content="lastfm top albums generator, last.fm top albums generator, lastfm top albums, last.fm top albums, lastfm, last.fm, top albums" />
         <link href="main.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript">
             var _gaq = _gaq || [];
@@ -23,7 +25,7 @@
             <form action="patchwork.php" method="GET">
                 <p>
                     <label for="user">Username</label>
-                    <input type="text" name="user" id="user" value="Dinduks" />
+                    <input type="text" name="user" id="user" value="Dinduks" autofocus />
                 </p>
                 <p>
                     <label for="period">Period</label>
@@ -38,22 +40,26 @@
                 <p>
                     <label for="rows">Nr. of rows</label>
                     <select name="rows" id="rows">
-                        <?php for( $i=1; $i<=20; $i++ ){ ?>
-                        <option value="<?php echo $i; ?>" <?php echo ($i==5) ? "selected=\"selected\"" : ""; ?>><?php echo $i; ?></option>
-                        <?php } ?>
+                        <?php for ($i=1; $i<=20; $i++) : ?>
+                        <option value="<?php echo $i; ?>" <?php echo ($i==5) ? "selected='selected'" : ""; ?>>
+                            <?php echo $i; ?>
+                        </option>
+                        <?php endfor; ?>
                     </select>
                 </p>
                 <p>
                     <label for="cols">Nr. of columns</label>
                     <select name="cols" id="cols">
-                        <?php for( $i=1; $i<=20; $i++ ){ ?>
-                        <option value="<?php echo $i; ?>" <?php echo ($i==3) ? "selected=\"selected\"" : ""; ?>><?php echo $i; ?></option>
-                        <?php } ?>
+                        <?php for ($i=1; $i<=20; $i++) : ?>
+                        <option value="<?php echo $i; ?>" <?php echo ($i==2) ? "selected='selected'" : ""; ?>>
+                            <?php echo $i; ?>
+                        </option>
+                        <?php endfor; ?>
                     </select>
                 </p>
                 <p>
                     <label for="imageSize">Images size</label>
-                    <input type="text" value="99" name="imageSize" id="imagesSize" /> px
+                    <input type="text" value="150" name="imageSize" id="imagesSize" /> px
                 </p>
                 <p>
                     <input type="submit" id="submit" value="Generate!" />
