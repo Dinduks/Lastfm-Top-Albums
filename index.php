@@ -14,7 +14,7 @@
             <form action="patchwork.php" method="GET">
                 <p>
                     <label for="user">Username</label>
-                    <input type="text" name="user" id="user" value="Dinduks" autofocus />
+                    <input type="text" name="user" id="user" value="" autofocus />
                 </p>
                 <p>
                     <label for="period">Period</label>
