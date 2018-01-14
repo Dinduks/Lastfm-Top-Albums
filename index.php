@@ -51,6 +51,10 @@
                     <input type="text" value="150" name="imageSize" id="imagesSize" /> px
                 </p>
                 <p>
+                    <input type="checkbox" name="noborder" id="noborder" /> px
+                    <label for="noborder">Remove that ugly white border!</label>
+                </p>
+                <p>
                     <input type="submit" id="submit" value="Generate!" />
                 </p>
             </form>
