@@ -14,7 +14,7 @@
             <form action="patchwork.php" method="GET">
                 <p>
                     <label for="user">Username</label>
-                    <input type="text" name="user" id="user" value="Dinduks" autofocus />
+                    <input type="text" name="user" id="user" value="" autofocus />
                 </p>
                 <p>
                     <label for="period">Period</label>
@@ -49,6 +49,10 @@
                 <p>
                     <label for="imageSize">Images size</label>
                     <input type="text" value="150" name="imageSize" id="imagesSize" /> px
+                </p>
+                <p>
+                    <input type="checkbox" name="noborder" id="noborder" />
+                    <label for="noborder">No border</label>
                 </p>
                 <p>
                     <input type="submit" id="submit" value="Generate!" />

@@ -14,6 +14,7 @@ $period     = $_GET["period"];
 $rows       = $_GET["rows"];
 $cols       = $_GET["cols"];
 $imagesSize = $_GET["imageSize"];
+$noborder   = (bool)(isset($_GET["noborder"]) && $_GET["noborder"]);
 // Get 5 more albums incase there isn't an available
 // image for one of the requested albums #lazyhackftw
 $limit      = ($cols * $rows) + 5;
@@ -72,15 +73,17 @@ $PatchworkHeight = $imagesSideSize * $rows + ($rows - 1);
 
 // create the "empty" patchwork
 $patchwork = imagecreatetruecolor($PatchworkWidth, $PatchworkHeight);
-// create a white color (reminds me of SDL ^^)
-$white = imagecolorallocate($patchwork, 255, 255, 255);
-// we fill our patchwork by the white color
-imagefilltoborder($patchwork, 0, 0, $white, $white);
+if (!$noborder) {
+    // create a white color (reminds me of SDL ^^)
+    $white = imagecolorallocate($patchwork, 255, 255, 255);
+    // we fill our patchwork by the white color
+    imagefilltoborder($patchwork, 0, 0, $white, $white);
+}
 
 // now we "parse" our images in the patchwork, while resizing them :]
 for ($i=0; $i<$rows; $i++) {
     for ($j=0; $j<$cols; $j++) {
-        imagecopyresampled($patchwork, $images[$cols*$i+$j], $j*$imagesSideSize+$j, $i*$imagesSideSize+$i, 0, 0, $imagesSideSize, $imagesSideSize, imagesx($images[$cols*$i+$j]), imagesy($images[$cols*$i+$j]));
+        imagecopyresampled($patchwork, $images[$cols*$i+$j], $j*$imagesSideSize+$j, $i*$imagesSideSize+$i, 0, 0, $imagesSideSize+intval($noborder), $imagesSideSize+intval($noborder), imagesx($images[$cols*$i+$j]), imagesy($images[$cols*$i+$j]));
     }
 }
 
