@@ -52,7 +52,7 @@
                 </p>
                 <p>
                     <input type="checkbox" name="noborder" id="noborder" />
-                    <label for="noborder">Remove that ugly white border!</label>
+                    <label for="noborder">No border</label>
                 </p>
                 <p>
                     <input type="submit" id="submit" value="Generate!" />
