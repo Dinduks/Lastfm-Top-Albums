@@ -21,6 +21,7 @@
                     <select name="period" id="period">
                         <option value="overall">Overall</option>
                         <option value="7day">7 days</option>
+                        <option value="1month">1 month</option>
                         <option value="3month">3 months</option>
                         <option value="6month">6 months</option>
                         <option value="12month">One year</option>
