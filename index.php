@@ -49,12 +49,12 @@
 
                 <div class="row">
                     <div class="field">
-                        <label for="rows">Rows</label>
-                        <input type="number" name="rows" id="rows" value="5" min="1" max="20" required />
+                        <label for="cols">Columns</label>
+                        <input type="number" name="cols" id="cols" value="2" min="1" max="4" required />
                     </div>
                     <div class="field">
-                        <label for="cols">Columns</label>
-                        <input type="number" name="cols" id="cols" value="2" min="1" max="20" required />
+                        <label for="rows">Rows</label>
+                        <input type="number" name="rows" id="rows" value="5" min="1" max="20" required />
                     </div>
                     <div class="field">
                         <label for="imageSize">Cover size</label>
@@ -87,16 +87,17 @@
                 // flat "sleeve" colours standing in for album covers
                 var sleeves = ["#111111", "#d51007", "#e8c547", "#2b59c3", "#9aa5b1", "#f08a4b", "#1f6f50", "#d9c5b2", "#5b3a6e", "#f4f1ea"];
 
-                function clamp(value, min, max, fallback) {
-                    var n = parseInt(value, 10);
-                    if (isNaN(n)) return fallback;
-                    return Math.min(max, Math.max(min, n));
+                // read a number field, kept within its own min/max attributes
+                function bounded(input) {
+                    var n = parseInt(input.value, 10);
+                    if (isNaN(n)) n = parseInt(input.defaultValue, 10);
+                    return Math.min(+input.max, Math.max(+input.min, n));
                 }
 
                 function render() {
-                    var rows = clamp(form.rows.value, 1, 20, 5);
-                    var cols = clamp(form.cols.value, 1, 20, 2);
-                    var size = clamp(form.imageSize.value, 10, 600, 150);
+                    var rows = bounded(form.rows);
+                    var cols = bounded(form.cols);
+                    var size = bounded(form.imageSize);
                     var border = !form.noborder.checked;
 
                     var cell = Math.max(4, Math.floor(Math.min(240 / cols, 240 / rows)));
@@ -117,6 +118,13 @@
                 }
 
                 form.addEventListener("input", render);
+                // on leaving a field, snap an out-of-range value to the limit
+                form.addEventListener("change", function (event) {
+                    var input = event.target;
+                    if (input.type !== "number") return;
+                    input.value = bounded(input);
+                    render();
+                });
                 render();
             })();
         </script>
