@@ -90,7 +90,9 @@
 
                 // read a number field, kept within its own min/max attributes
                 function bounded(input) {
-                    var n = parseInt(input.value, 10);
+                    // valueAsNumber reads "1e1" as 10 (parseInt stops at the "e");
+                    // truncate like patchwork.php's (int) cast
+                    var n = Math.trunc(input.valueAsNumber);
                     if (isNaN(n)) n = parseInt(input.defaultValue, 10);
                     return Math.min(+input.max, Math.max(+input.min, n));
                 }
