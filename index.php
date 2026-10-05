@@ -24,7 +24,7 @@
         <main class="layout">
             <section class="intro">
                 <h1>Top<br />albums<br /><span class="accent">patchwork</span></h1>
-                <p class="lede">Your most played Last.fm albums, stitched into one image. Pick a user, a period and a grid size.</p>
+                <p class="lede">Your most played Last.fm albums, stitched into one image.</p>
             </section>
 
             <form class="generator" action="patchwork.php" method="GET">
