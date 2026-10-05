@@ -5,6 +5,13 @@ if (!isset($_GET) || empty($_GET)) {
     exit;
 }
 
+function fail($status, $message) {
+    http_response_code($status);
+    header('Content-type: text/plain; charset=utf-8');
+    echo $message;
+    exit;
+}
+
 $apiUrl = "http://ws.audioscrobbler.com/2.0/";
 $apiKey = "61d580c50e6e5e3f14b6bd9527e5395f";
 $method = "user.gettopalbums";
@@ -22,10 +29,25 @@ $limit      = ($cols * $rows) + 5;
 // create the url
 $query = "$apiUrl?method=$method&user=$user&period=$period&limit=$limit&api_key=$apiKey";
 
-// check if the image isn't already loaded
-$response     = file_get_contents($query);
-$responseHash = md5($response);
+// fetch the top albums; ignore_errors keeps the body of non-2xx responses,
+// which carries Last.fm's error message (e.g. "User not found")
+$context  = stream_context_create(array('http' => array('ignore_errors' => true)));
+$response = @file_get_contents($query, false, $context);
 
+// create a DOMDocument which will contain the information returned by Last.fm's Web service
+$topAlbums = new DOMDocument();
+if ($response === false || !@$topAlbums->loadXML($response)) {
+    fail(502, "Could not reach Last.fm. Please try again later.");
+}
+if ($topAlbums->documentElement->getAttribute('status') !== 'ok') {
+    $error = $topAlbums->getElementsByTagName('error')->item(0);
+    // error 6: "User not found" / invalid parameters
+    $status = ($error && $error->getAttribute('code') === '6') ? 404 : 502;
+    fail($status, "Last.fm error: " . ($error ? trim($error->nodeValue) : "unknown error"));
+}
+
+// check if the image isn't already loaded
+$responseHash = md5($response);
 
 $fileName = "images/$user.$period.$rows.$cols.$imagesSize.$responseHash";
 if (file_exists($fileName)) {
@@ -34,14 +56,10 @@ if (file_exists($fileName)) {
     exit;
 }
 
-// create a DOMDocument which will contain the information returned by Last.fm's Web service
-$topAlbums = new DOMDocument();
-$topAlbums->load($query);
-
 // get the images' urls
 $imagesUrlsList = array();
 $topAlbumsList = $topAlbums->getElementsByTagName("album");
-for ($i=0; $i<$limit; $i++) {
+for ($i=0; $i<min($limit, $topAlbumsList->length); $i++) {
     if (!preg_match('/default_album/', $topAlbumsList->item($i)->getElementsByTagName("image")->item(3)->nodeValue))
         $imagesUrlsList[] = $topAlbumsList->item($i)->getElementsByTagName("image")->item(3)->nodeValue;
 }
@@ -83,6 +101,8 @@ if (!$noborder) {
 // now we "parse" our images in the patchwork, while resizing them :]
 for ($i=0; $i<$rows; $i++) {
     for ($j=0; $j<$cols; $j++) {
+        // the user may have fewer albums with covers than requested cells
+        if (!isset($images[$cols*$i+$j]) || !$images[$cols*$i+$j]) continue;
         imagecopyresampled($patchwork, $images[$cols*$i+$j], $j*$imagesSideSize+$j, $i*$imagesSideSize+$i, 0, 0, $imagesSideSize+intval($noborder), $imagesSideSize+intval($noborder), imagesx($images[$cols*$i+$j]), imagesy($images[$cols*$i+$j]));
     }
 }
