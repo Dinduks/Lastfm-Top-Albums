@@ -76,6 +76,7 @@
                 </figure>
 
                 <button type="submit" id="submit">Generate</button>
+                <p class="status" id="status" role="status" aria-live="polite"></p>
             </form>
         </main>
 
@@ -106,7 +107,7 @@
 
                     var html = "";
                     for (var i = 0; i < rows * cols; i++) {
-                        html += '<i style="width:' + cell + 'px;height:' + cell + 'px;background:' + sleeves[(i * 7 + 3) % sleeves.length] + '"></i>';
+                        html += '<i style="width:' + cell + 'px;height:' + cell + 'px;background:' + sleeves[(i * 7 + 3) % sleeves.length] + ';animation-delay:' + (i * 60 % 1200) + 'ms"></i>';
                     }
                     mosaic.innerHTML = html;
 
@@ -125,6 +126,27 @@
                     input.value = bounded(input);
                     render();
                 });
+
+                // the image can take a while (one download per cover):
+                // show that something is happening and block double submits
+                var submit = document.getElementById("submit");
+                var status = document.getElementById("status");
+                form.addEventListener("submit", function () {
+                    form.classList.add("loading");
+                    form.setAttribute("aria-busy", "true");
+                    submit.disabled = true;
+                    submit.textContent = "Generating\u2026";
+                    status.textContent = "Fetching covers from Last.fm. Bigger grids take longer.";
+                });
+                // coming back with the Back button restores the page from cache as-is
+                window.addEventListener("pageshow", function () {
+                    form.classList.remove("loading");
+                    form.removeAttribute("aria-busy");
+                    submit.disabled = false;
+                    submit.textContent = "Generate";
+                    status.textContent = "";
+                });
+
                 render();
             })();
         </script>
