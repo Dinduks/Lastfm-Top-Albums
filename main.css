@@ -82,6 +82,8 @@ h1 {
     letter-spacing: -.01em;
 }
 
+.accent { color: var(--red); }
+
 .lede {
     /* same treatment as the field labels and top bar */
     max-width: 36em;
