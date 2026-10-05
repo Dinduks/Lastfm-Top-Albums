@@ -70,9 +70,9 @@
                     <span>No border between covers</span>
                 </label>
 
-                <figure class="preview" aria-hidden="true">
-                    <div class="mosaic" id="mosaic"></div>
-                    <figcaption id="dimensions"></figcaption>
+                <figure class="preview">
+                    <div class="mosaic" id="mosaic" aria-hidden="true"></div>
+                    <figcaption id="dimensions" aria-live="polite"></figcaption>
                 </figure>
 
                 <button type="submit" id="submit">Generate</button>
