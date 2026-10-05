@@ -27,7 +27,13 @@ $noborder   = (bool)(isset($_GET["noborder"]) && $_GET["noborder"]);
 $limit      = ($cols * $rows) + 5;
 
 // create the url
-$query = "$apiUrl?method=$method&user=$user&period=$period&limit=$limit&api_key=$apiKey";
+$query = $apiUrl . "?" . http_build_query(array(
+    "method"  => $method,
+    "user"    => $user,
+    "period"  => $period,
+    "limit"   => $limit,
+    "api_key" => $apiKey,
+), "", "&");
 
 // fetch the top albums; ignore_errors keeps the body of non-2xx responses,
 // which carries Last.fm's error message (e.g. "User not found")
@@ -49,7 +55,13 @@ if ($topAlbums->documentElement->getAttribute('status') !== 'ok') {
 // check if the image isn't already loaded
 $responseHash = md5($response);
 
-$fileName = "images/$user.$period.$rows.$cols.$imagesSize.$responseHash";
+// the parts come straight from the query string: strip anything that could
+// leave images/ (e.g. "../"); the response hash keeps distinct users apart
+$fileNameParts = array();
+foreach (array($user, $period, $rows, $cols, $imagesSize) as $part) {
+    $fileNameParts[] = preg_replace('/[^A-Za-z0-9_-]/', '_', (string)$part);
+}
+$fileName = "images/" . implode(".", $fileNameParts) . ".$responseHash";
 if (file_exists($fileName)) {
     header("Content-type: image/jpg");
     echo file_get_contents($fileName);
