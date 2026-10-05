@@ -23,7 +23,7 @@
 
         <main class="layout">
             <section class="intro">
-                <h1>Top<br />albums<br /><span class="accent">patchwork</span></h1>
+                <h1>Top<br />albums<br />patchwork</h1>
                 <p class="lede">Your most played Last.fm albums, stitched into one image.</p>
             </section>
 
