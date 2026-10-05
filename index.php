@@ -9,7 +9,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
-        <link href="main.css" rel="stylesheet" type="text/css" />
+        <!-- the server sends no Cache-Control, so version the URL by mtime to bust stale copies -->
+        <link href="main.css?v=<?php echo filemtime(__DIR__ . '/main.css'); ?>" rel="stylesheet" type="text/css" />
     </head>
     <body>
         <header class="topbar">
