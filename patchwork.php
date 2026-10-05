@@ -18,9 +18,10 @@ $method = "user.gettopalbums";
 
 $user       = $_GET["user"];
 $period     = $_GET["period"];
-$rows       = $_GET["rows"];
-$cols       = $_GET["cols"];
-$imagesSize = $_GET["imageSize"];
+// same limits as the form on index.php
+$rows       = max(1, min(20, (int)$_GET["rows"]));
+$cols       = max(1, min(4, (int)$_GET["cols"]));
+$imagesSize = isset($_GET["imageSize"]) ? max(10, min(500, (int)$_GET["imageSize"])) : null;
 $noborder   = (bool)(isset($_GET["noborder"]) && $_GET["noborder"]);
 // Get 5 more albums incase there isn't an available
 // image for one of the requested albums #lazyhackftw
