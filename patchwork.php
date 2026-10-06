@@ -12,6 +12,75 @@ function fail($status, $message) {
     exit;
 }
 
+// download covers in parallel (needs the curl extension) and decode them;
+// returns $key => GD image, leaving out any cover that failed. Nothing runs
+// past $deadline (a microtime): each download's timeout is capped to the
+// time left, and anything unfinished at the deadline is dropped
+function fetchCovers(array $urls, $deadline, $concurrency = 16) {
+    $covers = array();
+    if (!$urls) return $covers;
+
+    $multi   = curl_multi_init();
+    $pending = array_keys($urls);
+    $running = array();   // handle id => array(handle, $key)
+
+    // curl handles are resources before PHP 8 and objects since
+    $id = function ($handle) {
+        return is_object($handle) ? spl_object_id($handle) : (int)$handle;
+    };
+    $start = function () use ($multi, $urls, &$pending, &$running, $id, $deadline) {
+        $msLeft = (int)(($deadline - microtime(true)) * 1000);
+        if ($msLeft < 200) {   // too late to fetch anything useful
+            $pending = array();
+            return;
+        }
+        $key = array_shift($pending);
+        $handle = curl_init($urls[$key]);
+        curl_setopt_array($handle, array(
+            CURLOPT_RETURNTRANSFER  => true,
+            CURLOPT_FOLLOWLOCATION  => true,
+            // one connection per cover: over HTTP/2 every download shares a
+            // single connection, and when it stalls all of them stall
+            CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CONNECTTIMEOUT  => 3,
+            CURLOPT_TIMEOUT_MS      => min(6000, $msLeft),
+            // covers are ~36KB: give up on a stalled download after 2s
+            CURLOPT_LOW_SPEED_LIMIT => 1024,
+            CURLOPT_LOW_SPEED_TIME  => 2,
+        ));
+        curl_multi_add_handle($multi, $handle);
+        $running[$id($handle)] = array($handle, $key);
+    };
+
+    while ($pending && count($running) < $concurrency) $start();
+
+    while ($running && microtime(true) < $deadline) {
+        curl_multi_exec($multi, $active);
+        if (curl_multi_select($multi, 1.0) === -1) usleep(10000);
+
+        while ($done = curl_multi_info_read($multi)) {
+            $handle = $done["handle"];
+            list(, $key) = $running[$id($handle)];
+            unset($running[$id($handle)]);
+
+            $data = curl_multi_getcontent($handle);
+            $ok = $done["result"] === CURLE_OK
+                && curl_getinfo($handle, CURLINFO_HTTP_CODE) === 200
+                && $data !== "";
+            $image = $ok ? @imagecreatefromstring($data) : false;
+            if ($image) $covers[$key] = $image;
+
+            curl_multi_remove_handle($multi, $handle);
+            if ($pending) $start();
+        }
+    }
+
+    // past the deadline: drop whatever is still downloading
+    foreach ($running as $entry) curl_multi_remove_handle($multi, $entry[0]);
+    curl_multi_close($multi);
+    return $covers;
+}
+
 $apiUrl = "http://ws.audioscrobbler.com/2.0/";
 $apiKey = "61d580c50e6e5e3f14b6bd9527e5395f";
 $method = "user.gettopalbums";
@@ -70,33 +139,41 @@ if (file_exists($fileName)) {
     exit;
 }
 
-// get the images' urls
+// get the images' urls (300px "extralarge"), in ranking order, skipping
+// albums without artwork
 $imagesUrlsList = array();
 $topAlbumsList = $topAlbums->getElementsByTagName("album");
 for ($i=0; $i<min($limit, $topAlbumsList->length); $i++) {
-    if (!preg_match('/default_album/', $topAlbumsList->item($i)->getElementsByTagName("image")->item(3)->nodeValue))
-        $imagesUrlsList[] = $topAlbumsList->item($i)->getElementsByTagName("image")->item(3)->nodeValue;
+    $imageNode = $topAlbumsList->item($i)->getElementsByTagName("image")->item(3);
+    $imageUrl  = $imageNode ? trim($imageNode->nodeValue) : "";
+    if ($imageUrl !== "" && !preg_match('/default_album/', $imageUrl))
+        $imagesUrlsList[] = $imageUrl;
 }
 
-// create the images
-$images = array();
-foreach($imagesUrlsList as $imageUrl){
-    $explodedImageUrl = explode(".", $imageUrl);
-    $explodedImageUrlSize = sizeof($explodedImageUrl);
-    $imageExtension = $explodedImageUrl[$explodedImageUrlSize-1];
-    switch ($imageExtension) {
-      case 'jpg':
-        $images[] = imagecreatefromjpeg($imageUrl);
-        break;
-      case 'png':
-        $images[] = imagecreatefrompng($imageUrl);
-        break;
-      case 'gif':
-        $images[] = imagecreatefromgif($imageUrl);
-        break;
+// download only as many covers as there are cells, then replace any that
+// failed with the next albums in the ranking (the 5 spares)
+$cells    = $rows * $cols;
+$covers   = array();
+$next     = 0;
+// stay well inside PHP's 30s limit: all downloads, retries and spares
+// stop here; covers still missing leave their cells empty
+$deadline = microtime(true) + 20;
+while (count($covers) < $cells && $next < count($imagesUrlsList)
+       && microtime(true) < $deadline) {
+    $batch = array_slice($imagesUrlsList, $next, $cells - count($covers), true);
+    $next += count($batch);
+    $fetched = fetchCovers($batch, $deadline);
+    // the image CDN intermittently 404s some covers (seen ~40% of requests
+    // for one cover): retry twice, briefly spaced, before giving the cell
+    // to a spare album
+    for ($try = 0; $try < 2 && microtime(true) < $deadline && ($missed = array_diff_key($batch, $fetched)); $try++) {
+        usleep(250000);
+        $fetched += fetchCovers($missed, $deadline);
     }
+    $covers += $fetched;
 }
-unset($imageUrl);
+ksort($covers);
+$images = array_values($covers);
 
 // srsbsns: create our albums patchwork \o/
 (isset($imagesSize)) ? $imagesSideSize = $imagesSize : $imagesSideSize = 99;
