@@ -1,0 +1,6 @@
+User-agent: *
+# raw cache of generated images; patchwork.php stays crawlable so link
+# previews (e.g. X's bot, which respects robots.txt) can render collages
+Disallow: /images/
+
+Sitemap: https://lastfmtopalbums.dinduks.com/sitemap.xml

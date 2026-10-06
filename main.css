@@ -301,6 +301,57 @@ input[type="number"]:focus {
     color: var(--muted);
 }
 
+/* about / FAQ, below the fold */
+
+.about { border-top: 3px solid var(--rule); }
+
+.about-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 48px 32px 72px;
+}
+
+.about h2 {
+    margin: 0 0 12px;
+    font-family: Anton, "Arial Narrow", Impact, sans-serif;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.about p {
+    max-width: 62ch;
+    margin: 0;
+    color: var(--muted);
+}
+
+.faq {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px 40px;
+    margin: 40px 0 0;
+}
+
+.faq > div {
+    border-top: 2px solid var(--rule);
+    padding-top: 12px;
+}
+
+.faq dt {
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.faq dd {
+    margin: 0;
+    font-size: 15px;
+    color: var(--muted);
+}
+
 /* narrow screens */
 
 @media (max-width: 980px) {
@@ -313,6 +364,8 @@ input[type="number"]:focus {
     h1 { font-size: min(96px, calc((100vw - 40px) / 4.5)); }
 
     .topbar { padding: 12px 16px; }
+
+    .about-inner { padding: 36px 16px 56px; }
 }
 
 @media (max-width: 420px) {

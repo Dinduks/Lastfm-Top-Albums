@@ -1,4 +1,16 @@
-<!DOCTYPE html>
+<?php
+// http:// already 301s to https:// on the server; tell browsers to stay on
+// https for a year. Ignored over plain http. Browsers that cached this
+// refuse plain http until it expires, so keep the TLS certificate renewing.
+header("Strict-Transport-Security: max-age=31536000");
+
+$siteUrl     = "https://lastfmtopalbums.dinduks.com/";
+$title       = "Last.fm Collage Generator \u{2014} Top Albums Patchwork";
+$description = "Turn your most played Last.fm albums into one collage image. Pick a period from 7 days to all time, up to 4 \u{00d7} 20 covers. Free, no sign-in.";
+// link previews truncate around 125 characters, so they get a shorter one
+$shareDescription = "Turn your most played Last.fm albums into one collage image, from the last 7 days to all time.";
+$siteName    = "Last.fm Top Albums Patchwork";
+?><!DOCTYPE html>
 <html lang="en">
     <head>
         <!-- Google tag (gtag.js) -->
@@ -10,11 +22,43 @@
 
             gtag('config', 'G-9WY15PDQWC');
         </script>
-        <title>Last.fm top albums patchwork generator</title>
+        <title><?php echo $title; ?></title>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="A tool that generates a patchwork, an image, based on the covers of your Last.fm top albums. It's simple, free, and it works." />
-        <meta name="keywords" content="lastfm top albums generator, last.fm top albums generator, lastfm top albums, last.fm top albums, lastfm, last.fm, top albums" />
+        <meta name="description" content="<?php echo $description; ?>" />
+        <link rel="canonical" href="<?php echo $siteUrl; ?>" />
+
+        <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="favicon-48.png" type="image/png" sizes="48x48" />
+        <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+        <meta name="theme-color" content="#0d0d0d" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="<?php echo $siteName; ?>" />
+        <meta property="og:url" content="<?php echo $siteUrl; ?>" />
+        <meta property="og:title" content="<?php echo $title; ?>" />
+        <meta property="og:description" content="<?php echo $shareDescription; ?>" />
+        <meta property="og:image" content="<?php echo $siteUrl; ?>og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Top albums patchwork: a grid of album covers" />
+        <meta name="twitter:card" content="summary_large_image" />
+
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "<?php echo $siteName; ?>",
+            "alternateName": "Last.fm Collage Generator",
+            "url": "<?php echo $siteUrl; ?>",
+            "description": "<?php echo $description; ?>",
+            "applicationCategory": "MultimediaApplication",
+            "operatingSystem": "Any",
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+        }
+        </script>
+
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
@@ -88,6 +132,36 @@
                 <p class="status" id="status" role="status" aria-live="polite"></p>
             </form>
         </main>
+
+        <section class="about">
+            <div class="about-inner">
+                <h2>A Last.fm collage generator</h2>
+                <p>Enter a Last.fm username and this tool fetches that user's most played albums, then stitches their cover art into a single image: a collage of the albums that defined a week, a month, a year or all time.</p>
+
+                <dl class="faq">
+                    <div>
+                        <dt>Which periods can I choose?</dt>
+                        <dd>The last 7 days, 1, 3 or 6 months, the last year, or all time. The ranking comes straight from Last.fm.</dd>
+                    </div>
+                    <div>
+                        <dt>How big can the collage be?</dt>
+                        <dd>Up to 4 columns and 20 rows, with covers from 10 to 500 pixels wide. The preview shows the exact size of the image before you generate it.</dd>
+                    </div>
+                    <div>
+                        <dt>What about albums without cover art?</dt>
+                        <dd>They are skipped, and the next albums in the ranking fill their place. If more than five are missing, the last cells stay empty.</dd>
+                    </div>
+                    <div>
+                        <dt>Does the image stay up to date?</dt>
+                        <dd>Yes. The image link stays the same and is rebuilt from your latest Last.fm stats whenever your top albums change, so you can embed it in a forum signature, a blog sidebar or anywhere that accepts an image URL.</dd>
+                    </div>
+                    <div>
+                        <dt>Do I need to sign in?</dt>
+                        <dd>No. It only reads public listening stats from Last.fm, and it's free.</dd>
+                    </div>
+                </dl>
+            </div>
+        </section>
 
         <script>
             (function () {
