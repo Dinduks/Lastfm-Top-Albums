@@ -13,8 +13,10 @@ function fail($status, $message) {
 }
 
 // download covers in parallel (needs the curl extension) and decode them;
-// returns $key => GD image, leaving out any cover that failed
-function fetchCovers(array $urls, $concurrency = 16) {
+// returns $key => GD image, leaving out any cover that failed. Nothing runs
+// past $deadline (a microtime): each download's timeout is capped to the
+// time left, and anything unfinished at the deadline is dropped
+function fetchCovers(array $urls, $deadline, $concurrency = 16) {
     $covers = array();
     if (!$urls) return $covers;
 
@@ -26,7 +28,12 @@ function fetchCovers(array $urls, $concurrency = 16) {
     $id = function ($handle) {
         return is_object($handle) ? spl_object_id($handle) : (int)$handle;
     };
-    $start = function () use ($multi, $urls, &$pending, &$running, $id) {
+    $start = function () use ($multi, $urls, &$pending, &$running, $id, $deadline) {
+        $msLeft = (int)(($deadline - microtime(true)) * 1000);
+        if ($msLeft < 200) {   // too late to fetch anything useful
+            $pending = array();
+            return;
+        }
         $key = array_shift($pending);
         $handle = curl_init($urls[$key]);
         curl_setopt_array($handle, array(
@@ -36,7 +43,7 @@ function fetchCovers(array $urls, $concurrency = 16) {
             // single connection, and when it stalls all of them stall
             CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1,
             CURLOPT_CONNECTTIMEOUT  => 3,
-            CURLOPT_TIMEOUT         => 6,
+            CURLOPT_TIMEOUT_MS      => min(6000, $msLeft),
             // covers are ~36KB: give up on a stalled download after 2s
             CURLOPT_LOW_SPEED_LIMIT => 1024,
             CURLOPT_LOW_SPEED_TIME  => 2,
@@ -47,7 +54,7 @@ function fetchCovers(array $urls, $concurrency = 16) {
 
     while ($pending && count($running) < $concurrency) $start();
 
-    while ($running) {
+    while ($running && microtime(true) < $deadline) {
         curl_multi_exec($multi, $active);
         if (curl_multi_select($multi, 1.0) === -1) usleep(10000);
 
@@ -68,6 +75,8 @@ function fetchCovers(array $urls, $concurrency = 16) {
         }
     }
 
+    // past the deadline: drop whatever is still downloading
+    foreach ($running as $entry) curl_multi_remove_handle($multi, $entry[0]);
     curl_multi_close($multi);
     return $covers;
 }
@@ -146,19 +155,20 @@ for ($i=0; $i<min($limit, $topAlbumsList->length); $i++) {
 $cells    = $rows * $cols;
 $covers   = array();
 $next     = 0;
-// stay well inside PHP's 30s limit: no retries or spares past this point
-$deadline = microtime(true) + 15;
+// stay well inside PHP's 30s limit: all downloads, retries and spares
+// stop here; covers still missing leave their cells empty
+$deadline = microtime(true) + 20;
 while (count($covers) < $cells && $next < count($imagesUrlsList)
-       && ($next === 0 || microtime(true) < $deadline)) {
+       && microtime(true) < $deadline) {
     $batch = array_slice($imagesUrlsList, $next, $cells - count($covers), true);
     $next += count($batch);
-    $fetched = fetchCovers($batch);
+    $fetched = fetchCovers($batch, $deadline);
     // the image CDN intermittently 404s some covers (seen ~40% of requests
     // for one cover): retry twice, briefly spaced, before giving the cell
     // to a spare album
     for ($try = 0; $try < 2 && microtime(true) < $deadline && ($missed = array_diff_key($batch, $fetched)); $try++) {
         usleep(250000);
-        $fetched += fetchCovers($missed);
+        $fetched += fetchCovers($missed, $deadline);
     }
     $covers += $fetched;
 }
