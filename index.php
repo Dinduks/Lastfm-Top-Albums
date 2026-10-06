@@ -112,7 +112,7 @@ $siteName    = "Last.fm Top Albums Patchwork";
                     <div class="field">
                         <label for="imageSize">Cover size</label>
                         <div class="suffixed">
-                            <input type="number" name="imageSize" id="imageSize" value="150" min="10" max="500" required />
+                            <input type="number" name="imageSize" id="imageSize" value="150" min="10" max="300" required />
                             <span>px</span>
                         </div>
                     </div>
@@ -145,7 +145,7 @@ $siteName    = "Last.fm Top Albums Patchwork";
                     </div>
                     <div>
                         <dt>How big can the collage be?</dt>
-                        <dd>Up to 4 columns and 20 rows, with covers from 10 to 500 pixels wide. The preview shows the exact size of the image before you generate it.</dd>
+                        <dd>Up to 4 columns and 20 rows, with covers from 10 to 300 pixels wide. The preview shows the exact size of the image before you generate it.</dd>
                     </div>
                     <div>
                         <dt>What about albums without cover art?</dt>
