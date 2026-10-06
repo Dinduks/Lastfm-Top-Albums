@@ -7,6 +7,9 @@ header("Strict-Transport-Security: max-age=86400");
 $siteUrl     = "https://lastfmtopalbums.dinduks.com/";
 $title       = "Last.fm Collage Generator \u{2014} Top Albums Patchwork";
 $description = "Turn your most played Last.fm albums into one collage image. Pick a period from 7 days to all time, up to 4 \u{00d7} 20 covers. Free, no sign-in.";
+// link previews truncate around 125 characters, so they get a shorter one
+$shareDescription = "Turn your most played Last.fm albums into one collage image, from the last 7 days to all time.";
+$siteName    = "Last.fm Top Albums Patchwork";
 ?><!DOCTYPE html>
 <html lang="en">
     <head>
@@ -22,9 +25,10 @@ $description = "Turn your most played Last.fm albums into one collage image. Pic
         <meta name="theme-color" content="#0d0d0d" />
 
         <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="<?php echo $siteName; ?>" />
         <meta property="og:url" content="<?php echo $siteUrl; ?>" />
         <meta property="og:title" content="<?php echo $title; ?>" />
-        <meta property="og:description" content="<?php echo $description; ?>" />
+        <meta property="og:description" content="<?php echo $shareDescription; ?>" />
         <meta property="og:image" content="<?php echo $siteUrl; ?>og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -35,7 +39,7 @@ $description = "Turn your most played Last.fm albums into one collage image. Pic
         {
             "@context": "https://schema.org",
             "@type": "WebApplication",
-            "name": "Last.fm Top Albums Patchwork",
+            "name": "<?php echo $siteName; ?>",
             "alternateName": "Last.fm Collage Generator",
             "url": "<?php echo $siteUrl; ?>",
             "description": "<?php echo $description; ?>",
