@@ -12,22 +12,11 @@ function fail($status, $message) {
     exit;
 }
 
-// download covers in parallel and decode them; returns $key => GD image,
-// leaving out any cover that failed to download or decode
+// download covers in parallel (needs the curl extension) and decode them;
+// returns $key => GD image, leaving out any cover that failed
 function fetchCovers(array $urls, $concurrency = 16) {
     $covers = array();
     if (!$urls) return $covers;
-
-    // no curl extension: same contract, one cover at a time
-    if (!function_exists('curl_multi_init')) {
-        $context = stream_context_create(array('http' => array('timeout' => 6)));
-        foreach ($urls as $key => $url) {
-            $data = @file_get_contents($url, false, $context);
-            $image = $data === false ? false : @imagecreatefromstring($data);
-            if ($image) $covers[$key] = $image;
-        }
-        return $covers;
-    }
 
     $multi   = curl_multi_init();
     $pending = array_keys($urls);
