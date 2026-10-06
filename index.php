@@ -1,8 +1,8 @@
 <?php
 // http:// already 301s to https:// on the server; tell browsers to stay on
-// https. Ignored over plain http. Short max-age first: raise to a year
-// (31536000) once it has run without trouble.
-header("Strict-Transport-Security: max-age=86400");
+// https for a year. Ignored over plain http. Browsers that cached this
+// refuse plain http until it expires, so keep the TLS certificate renewing.
+header("Strict-Transport-Security: max-age=31536000");
 
 $siteUrl     = "https://lastfmtopalbums.dinduks.com/";
 $title       = "Last.fm Collage Generator \u{2014} Top Albums Patchwork";
