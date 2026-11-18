@@ -95,262 +95,52 @@ h1 {
     text-transform: uppercase;
 }
 
-/* form */
+/* closure notice, where the form used to be */
 
-.generator {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
+.closed {
     border-top: 3px solid var(--rule);
     padding-top: 22px;
 }
 
-.field { min-width: 0; margin: 0; padding: 0; border: 0; }
-
-.field > label,
-.field > legend {
-    display: block;
-    margin-bottom: 6px;
-    padding: 0;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-}
-
-input[type="text"],
-input[type="number"] {
-    width: 100%;
-    padding: 10px 0 8px;
-    border: 0;
-    border-bottom: 2px solid var(--rule);
-    border-radius: 0;
-    background: transparent;
-    color: var(--ink);
-    font: inherit;
-    font-size: 22px;
-    font-weight: 700;
-}
-
-input[type="text"]::placeholder { color: var(--muted); font-weight: 400; }
-
-input[type="text"]:focus,
-input[type="number"]:focus {
-    outline: none;
-    border-bottom-color: var(--red);
-}
-
-.row {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-}
-
-.suffixed { display: flex; align-items: baseline; gap: 6px; }
-.suffixed span { color: var(--muted); font-weight: 700; }
-
-/* period picker */
-
-.periods {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    border: 2px solid var(--rule);
-}
-
-.periods label { position: relative; cursor: pointer; }
-
-.periods input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.periods span {
-    display: block;
-    padding: 10px 8px;
-    text-align: center;
-    font-weight: 700;
-    font-size: 14px;
-    border-right: 2px solid var(--rule);
-    border-bottom: 2px solid var(--rule);
-}
-
-.periods label:nth-child(3n) span { border-right: 0; }
-.periods label:nth-child(n+4) span { border-bottom: 0; }
-
-.periods label:hover span { background: var(--field); }
-
-.periods input:checked + span {
-    background: var(--ink);
-    color: var(--paper);
-}
-
-.periods input:focus-visible + span {
-    outline: 3px solid var(--red);
-    outline-offset: -5px;
-}
-
-/* checkbox */
-
-.check {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 14px;
-}
-
-.check input {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    margin: 0;
-    border: 2px solid var(--rule);
-    border-radius: 0;
-    background: transparent;
-    display: grid;
-    place-content: center;
-    cursor: pointer;
-}
-
-.check input::after {
-    content: "";
-    width: 10px;
-    height: 10px;
-    background: var(--red);
-    transform: scale(0);
-}
-
-.check input:checked::after { transform: scale(1); }
-.check input:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
-
-/* live preview */
-
-.preview {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 20px;
-    margin: 0;
-    padding: 18px;
-    background: var(--field);
-}
-
-.mosaic {
-    display: grid;
-    flex: none;
-    background: var(--ink);
-    border: 2px solid var(--ink);
-}
-
-.mosaic i { display: block; }
-
-.preview figcaption {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .06em;
-    text-align: right;
-    text-transform: uppercase;
-    color: var(--muted);
-}
-
-/* submit */
-
-#submit {
-    align-self: stretch;
-    padding: 16px 20px;
-    border: 0;
-    border-radius: 0;
-    background: var(--red);
-    color: var(--red-ink);
-    font-family: Anton, "Arial Narrow", Impact, sans-serif;
-    font-size: 28px;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    cursor: pointer;
-}
-
-#submit:hover { background: var(--ink); color: var(--paper); }
-#submit:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
-
-/* loading: the button goes dark and the mosaic "fetches" cover by cover */
-
-.loading #submit,
-.loading #submit:hover {
-    background: var(--ink);
-    color: var(--paper);
-    cursor: progress;
-}
-
-.loading .mosaic i { animation: fetch 1.2s ease-in-out infinite; }
-
-@keyframes fetch {
-    0%, 100% { opacity: 1; }
-    50% { opacity: .15; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .loading .mosaic i { animation: none; opacity: .4; }
-}
-
-.status {
-    margin: -8px 0 0;
-    min-height: 1.45em;
-    font-size: 13px;
-    color: var(--muted);
-}
-
-/* about / FAQ, below the fold */
-
-.about { border-top: 3px solid var(--rule); }
-
-.about-inner {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: 48px 32px 72px;
-}
-
-.about h2 {
-    margin: 0 0 12px;
+.closed h2 {
+    margin: 0 0 18px;
     font-family: Anton, "Arial Narrow", Impact, sans-serif;
     font-weight: 400;
     font-size: 36px;
     line-height: 1;
     text-transform: uppercase;
+    color: var(--red);
 }
 
-.about p {
+.closed p {
     max-width: 62ch;
-    margin: 0;
-    color: var(--muted);
+    margin: 0 0 14px;
+    font-size: 17px;
 }
 
-.faq {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 28px 40px;
-    margin: 40px 0 0;
-}
-
-.faq > div {
+.links {
+    margin: 28px 0 0;
+    padding: 0;
+    list-style: none;
     border-top: 2px solid var(--rule);
-    padding-top: 12px;
 }
 
-.faq dt {
-    margin-bottom: 6px;
-    font-size: 12px;
+.links li { border-bottom: 2px solid var(--rule); }
+
+.links a {
+    display: block;
+    padding: 14px 0;
+    color: inherit;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: .08em;
+    text-decoration: none;
     text-transform: uppercase;
 }
 
-.faq dd {
-    margin: 0;
-    font-size: 15px;
-    color: var(--muted);
-}
+.links a::after { content: " \2192"; color: var(--red); }
+.links a:hover { color: var(--red); }
+.links a:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 
 /* narrow screens */
 
@@ -364,14 +154,4 @@ input[type="number"]:focus {
     h1 { font-size: min(96px, calc((100vw - 40px) / 4.5)); }
 
     .topbar { padding: 12px 16px; }
-
-    .about-inner { padding: 36px 16px 56px; }
-}
-
-@media (max-width: 420px) {
-    .row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .row .field:last-child { grid-column: span 2; }
-
-    .preview { flex-direction: column; align-items: flex-start; }
-    .preview figcaption { text-align: left; }
 }
