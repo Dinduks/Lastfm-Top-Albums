@@ -1,4 +1,4 @@
-This script generates a banner with the logos of your top albums, based on your Last.fm statistics. 
-Requirements: PHP 7.2 or later, with the GD and cURL extensions enabled.
+This script generated a banner with the logos of your top albums, based on your Last.fm statistics.
 
-This is what it looks like: https://lastfmtopalbums.dinduks.com/
+The hosted service at https://lastfmtopalbums.dinduks.com/ has closed: from 1 December 2026, Last.fm API keys require a paid Last.fm Pro subscription.
+The generator is still in the git history, in patchwork.php before the commit that closed the service. To run it yourself you need your own Last.fm API key (and Pro), plus PHP 7.2 or later with the GD and cURL extensions enabled.
