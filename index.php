@@ -68,7 +68,7 @@ $siteName    = "Last.fm Top Albums Patchwork";
             <section class="closed">
                 <h2>This service has closed</h2>
                 <p>From 1 December 2026, Last.fm only lets people with a paid Last.fm Pro subscription use its API, which this site needed to read your top albums. So the collage generator is no longer available, and existing collage links no longer show an image.</p>
-                <p>Thanks to everyone who made a patchwork over the years.</p>
+                <p>Thanks to everyone who made a patchwork since 2011.</p>
                 <ul class="links">
                     <li><a href="https://support.last.fm/t/api-keys-will-require-pro-from-1st-december/121030" target="_blank" rel="noopener">Last.fm's announcement</a></li>
                     <li><a href="https://github.com/Dinduks/Lastfm-Top-Albums" target="_blank" rel="noopener">The source code, to run it with your own API key</a></li>
